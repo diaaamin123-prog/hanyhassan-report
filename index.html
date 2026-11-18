@@ -106,8 +106,7 @@ function gate(){const us=(R&&R.users)||[];let need=us.length>0;CU='';
  if(need){const c=L('estuser');const u=c&&us.find(x=>x.h===c.h);if(u){CU=u.n;need=false}}
  $('lock').style.display=need?'flex':'none';
  $('lo').style.display=CU?'':'none';$('who').textContent=CU?'مسجّل الدخول: '+CU:'';
- const us2=(R&&R.users)||[];
- $('techw').innerHTML=us2.length?'<select id="ts"><option value="">— اختياري —</option>'+us2.map(u=>'<option value="'+esc(u.n)+'"'+(S.tech===u.n?' selected':'')+'>'+esc(u.n)+'</option>').join('')+'</select>':'<input id="ts" placeholder="اسم الفني (اختياري)" value="'+esc(S.tech||'')+'">';
+ $('techw').innerHTML='<input id="ts" placeholder="اسم الفني أو الفنيين (اختياري)" value="'+esc(S.tech||'')+'">';
  $('ts').onchange=$('ts').oninput=()=>{S.tech=$('ts').value;sv();cardR()};
  cardR()}
 function sv(){S.cc=cur?cur.c:'';L('rptdraft',S)}
