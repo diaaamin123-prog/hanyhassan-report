@@ -19,7 +19,7 @@ button.g{background:#444}button.r{background:var(--r)}button.w{background:#1da85
 .bx{background:#fff;border:1px solid var(--bd);border-radius:12px;padding:12px;margin-top:10px}
 .bx h2{font-size:15px;margin:0 0 8px}
 small.l{display:block;color:var(--mu);font-size:13px;margin:8px 0 4px}
-input,textarea{width:100%;font:inherit;color:var(--k);background:#fafbfa;border:1px solid var(--bd);border-radius:8px;padding:10px}
+input,textarea,select{width:100%;font:inherit;color:var(--k);background:#fafbfa;border:1px solid var(--bd);border-radius:8px;padding:10px}
 textarea{min-height:84px}
 input[readonly]{background:#eef1ef}
 .res{max-height:250px;overflow:auto;margin-top:6px}
@@ -65,7 +65,7 @@ input[readonly]{background:#eef1ef}
 </div>
 
 <div class="bx"><h2>بيانات المتابعة</h2>
-<small class="l">الفني</small><div id="techw"></div>
+<small class="l">الفني القائم بالصيانة (اختياري)</small><div id="techw"></div>
 <div class="row"><div><small class="l">التاريخ</small><input id="dt" type="date"></div></div>
 <small class="l">نوع التقرير</small>
 <div class="chips" id="t1"></div>
@@ -105,15 +105,16 @@ if(S.cc)cur=C.find(x=>x.c===S.cc)||null;
 function gate(){const us=(R&&R.users)||[];let need=us.length>0;CU='';
  if(need){const c=L('estuser');const u=c&&us.find(x=>x.h===c.h);if(u){CU=u.n;need=false}}
  $('lock').style.display=need?'flex':'none';
- $('lo').style.display=CU?'':'none';$('who').textContent=CU?'الفني: '+CU:'';
- $('techw').innerHTML=CU?'<input readonly value="'+esc(CU)+'">':'<input id="tn" placeholder="اسم الفني" value="'+esc(S.tn||'')+'">';
- if(!CU)$('tn').oninput=()=>{S.tn=$('tn').value;sv();cardR()};
+ $('lo').style.display=CU?'':'none';$('who').textContent=CU?'مسجّل الدخول: '+CU:'';
+ const us2=(R&&R.users)||[];
+ $('techw').innerHTML=us2.length?'<select id="ts"><option value="">— اختياري —</option>'+us2.map(u=>'<option value="'+esc(u.n)+'"'+(S.tech===u.n?' selected':'')+'>'+esc(u.n)+'</option>').join('')+'</select>':'<input id="ts" placeholder="اسم الفني (اختياري)" value="'+esc(S.tech||'')+'">';
+ $('ts').onchange=$('ts').oninput=()=>{S.tech=$('ts').value;sv();cardR()};
  cardR()}
 function sv(){S.cc=cur?cur.c:'';L('rptdraft',S)}
 const cnt=()=>L('rptcnt')||{};
-const nextNo=()=>(cnt()[CU||S.tn||'—']||0)+1;
+const nextNo=()=>(cnt()[CU||'—']||0)+1;
 function commit(){if(!cur){toast('اختار العميل الأول');return false}
- if(!qn){const c=cnt(),k=CU||S.tn||'—';c[k]=(c[k]||0)+1;L('rptcnt',c);qn=c[k]}
+ if(!qn){const c=cnt(),k=CU||'—';c[k]=(c[k]||0)+1;L('rptcnt',c);qn=c[k]}
  cardR();return true}
 function chips(id,key){$(id).innerHTML=TY.map(t=>'<label><input type="radio" name="'+id+'" value="'+t+'"'+(S[key]===t?' checked':'')+'>'+t+'</label>').join('');
  $(id).querySelectorAll('input').forEach(i=>i.onchange=()=>{S[key]=i.value;sv();cardR()})}
@@ -125,20 +126,20 @@ $('q').oninput=()=>{const w=norm($('q').value).split(/\s+/).filter(Boolean);if(!
 $('res').onclick=e=>{const d=e.target.closest('.it');if(d)pick(C[+d.dataset.i])};
 const f=(l,v,w)=>'<div class="f'+(w?' w':'')+'"><small>'+l+'</small><b>'+esc(v)+'</b></div>';
 const sm=(l,v,c)=>'<div class="sm'+(c?' '+c:'')+'"><small>'+l+'</small>'+esc(v||'—')+'</div>';
-function cardR(){const c=cur,nm=CU||S.tn||'—';
+function cardR(){const c=cur,nm=CU||'—';
  $('card').innerHTML='<div class="ch"><div class="cn"><b>م. هاني حسن للمصاعد</b><span>Hany Hassan Elevators</span></div><img src="'+LOGO+'" alt=""></div>'+
  '<div class="cb"><span>كارت متابعة صيانة</span><span>رقم '+(qn||nextNo())+'</span></div>'+
- '<div class="cg">'+f('اسم العميل',c?c.n:'—',1)+f('الكود',c?c.c:'—')+f('الخط',c?c.l:'—')+f('العنوان',c?c.a:'—',1)+f('تليفون العميل',(c&&c.p&&c.p.length)?c.p.map(x=>x[0]).join(' - '):'—',1)+f('الفني',nm)+f('التاريخ',dm(S.date))+f('نوع التقرير',S.type||'—',1)+'</div>'+
+ '<div class="cg">'+f('اسم العميل',c?c.n:'—',1)+f('الكود',c?c.c:'—')+f('الخط',c?c.l:'—')+f('العنوان',c?c.a:'—',1)+f('تليفون العميل',(c&&c.p&&c.p.length)?c.p.map(x=>x[0]).join(' - '):'—',1)+f('الفني القائم بالصيانة',S.tech||'—')+f('التاريخ',dm(S.date))+f('نوع التقرير',S.type||'—',1)+'</div>'+
  sm('الملخص الحالي',S.now,'n')+
  '<div class="cg">'+f('المتابعة التالية',S.ntype||'—')+f('تاريخها',dm(S.ndate)||'—')+'</div>'+
- '<div class="cf">أعدّه: '+esc(nm)+' | '+stamp()+'</div>'}
-function text(){const c=cur||{};return ['*كارت متابعة صيانة – هاني حسن للمصاعد*','رقم: '+(qn||nextNo()),'العميل: '+(c.n||''),'الكود: '+(c.c||''),'العنوان: '+(c.a||''),'تليفون: '+((c.p||[]).map(x=>x[0]).join(' - ')),'الفني: '+(CU||S.tn||''),'التاريخ: '+dm(S.date),'نوع التقرير: '+S.type,'','الملخص الحالي: '+S.now,'','المتابعة التالية: '+S.ntype+' '+dm(S.ndate),'',stamp()].join('\n')}
+ '<div class="cf">أُعدّ بواسطة: '+esc(nm)+' | '+stamp()+'</div>'}
+function text(){const c=cur||{};return ['*كارت متابعة صيانة – هاني حسن للمصاعد*','رقم: '+(qn||nextNo()),'العميل: '+(c.n||''),'الكود: '+(c.c||''),'العنوان: '+(c.a||''),'تليفون: '+((c.p||[]).map(x=>x[0]).join(' - ')),'الفني القائم بالصيانة: '+(S.tech||'—'),'التاريخ: '+dm(S.date),'نوع التقرير: '+S.type,'','الملخص الحالي: '+S.now,'','المتابعة التالية: '+S.ntype+' '+dm(S.ndate),'','أُعدّ بواسطة: '+(CU||'—')+' | '+stamp()].join('\n')}
 $('dt').onchange=()=>{S.date=$('dt').value;sv();cardR()};$('nd').onchange=()=>{S.ndate=$('nd').value;sv();cardR()};
 $('nw').oninput=()=>{S.now=$('nw').value;sv();cardR()};
 $('wa').onclick=()=>{if(!commit())return;const n=String((R&&R.wa)||'').replace(/\D/g,'');window.open('https://wa.me/'+n+'?text='+encodeURIComponent(text()),'_blank')};
 $('cp').onclick=async()=>{if(!commit())return;try{await navigator.clipboard.writeText(text());toast('تم النسخ')}catch(e){toast('تعذر النسخ')}};
 $('pr').onclick=()=>{if(!commit())return;const old=document.title;document.title=(cur.c+' - '+cur.n).replace(/[\/:*?"<>|]/g,'-');const rs=()=>{document.title=old;removeEventListener('afterprint',rs)};addEventListener('afterprint',rs);print()};
-$('nw2').onclick=()=>{if(!confirm('بدء متابعة جديدة؟'))return;cur=null;qn=0;Object.assign(S,{type:'',ntype:'',date:today(),ndate:'',prev:'',now:'',cc:''});fill();sel();cardR();sv()};
+$('nw2').onclick=()=>{if(!confirm('بدء متابعة جديدة؟'))return;cur=null;qn=0;Object.assign(S,{type:'',ntype:'',date:today(),ndate:'',prev:'',now:'',cc:'',tech:''});fill();sel();gate();sv()};
 $('ll').onclick=async()=>{const h=await sha($('lc').value.trim());const u=((R&&R.users)||[]).find(x=>x.h===h);if(!u)return toast('الكود غير صحيح');L('estuser',{h});$('lc').value='';gate()};
 $('lc').onkeydown=e=>{if(e.key==='Enter')$('ll').click()};
 $('lo').onclick=()=>{L('estuser',null);qn=0;gate()};
